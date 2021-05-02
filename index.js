@@ -5,18 +5,20 @@ const PORT = 3000;
 const {} = require('./games');
 const {addUser, getUser, deleteUser, getUsers} = require('./users');
 
-socket.onopen = () => {
+io.on("connection", socket => {
+  // either with send()
   socket.send("Hello!");
-};
 
-socket.onmessage = (data) => {
-  console.log(data);
-};
+  // or with emit() and custom event names
+  socket.emit("greetings", "Hey!", { "ms": "jane" }, Buffer.from([4, 3, 3, 1]));
 
-app.get('/', (req, res) => {
-  res.send('Server is up and running')
-});
+  // handle the event sent with socket.send()
+  socket.on("message", (data) => {
+    console.log(data);
+  });
 
-http.listen(PORT, () => {
-  console.log(`Listening to ${PORT}`);
+  // handle the event sent with socket.emit()
+  socket.on("salutations", (elem1, elem2, elem3) => {
+    console.log(elem1, elem2, elem3);
+  });
 });
