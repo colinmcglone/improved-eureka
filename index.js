@@ -1,24 +1,19 @@
 const app = require('express')();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
-const PORT = 3000;
 const {} = require('./games');
 const {addUser, getUser, deleteUser, getUsers} = require('./users');
 
-io.on("connection", socket => {
-  // either with send()
-  socket.send("Hello!");
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/index.html');
+});
 
-  // or with emit() and custom event names
-  socket.emit("greetings", "Hey!", { "ms": "jane" }, Buffer.from([4, 3, 3, 1]));
-
-  // handle the event sent with socket.send()
-  socket.on("message", (data) => {
-    console.log(data);
+io.on('connection', (socket) => {
+  socket.on('chat message', msg => {
+    io.emit('chat message', msg);
   });
+});
 
-  // handle the event sent with socket.emit()
-  socket.on("salutations", (elem1, elem2, elem3) => {
-    console.log(elem1, elem2, elem3);
-  });
+http.listen(port, () => {
+  console.log(`Socket.IO server running at http://localhost:${port}/`);
 });
