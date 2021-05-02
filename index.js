@@ -19,7 +19,7 @@ io.on('connection', (socket) => {
 });
 
 app.get('/', (req, res) => {
-  req.send('Server is up and running')
+  res.send('Server is up and running')
 });
 
 http.listen(PORT, () => {
