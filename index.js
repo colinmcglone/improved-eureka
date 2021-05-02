@@ -18,6 +18,10 @@ io.on('connection', (socket) => {
   });
 });
 
+app.get('/', (req, res) => {
+  req.send('Server is up and running')
+});
+
 http.listen(PORT, () => {
   console.log(`Listening to ${PORT}`);
 });
