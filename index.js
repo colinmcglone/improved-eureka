@@ -5,8 +5,6 @@ const port = 3000;
 const {} = require('./games');
 const {addUser, getUser, deleteUser, getUsers} = require('./users');
 
-app.use(express.static(__dirname + '/static'));
-
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
