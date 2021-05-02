@@ -5,18 +5,13 @@ const PORT = 3000;
 const {} = require('./games');
 const {addUser, getUser, deleteUser, getUsers} = require('./users');
 
+socket.onopen = () => {
+  socket.send("Hello!");
+};
 
-io.on('connection', (socket) => {
-  socket.on("login", ({name, room}, callback) => {
-  
-  });
-  socket.on("sendMessage", message => {
-  
-  });
-  socket.on("disconnect", () => {
-  
-  });
-});
+socket.onmessage = (data) => {
+  console.log(data);
+};
 
 app.get('/', (req, res) => {
   res.send('Server is up and running')
