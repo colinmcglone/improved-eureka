@@ -13,7 +13,14 @@ io.on('connection', (socket) => {
   socket.on('chat message', msg => {
     io.emit('chat message', msg);
   });
+
+  socket.on('join request', roomName => {
+    socket.join(roomName);
+    socket.emit('join room', roomName);
+  });
 });
+
+
 
 http.listen(port, () => {
   console.log(`Socket.IO server running at http://localhost:${port}/`);

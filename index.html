@@ -16,6 +16,11 @@
     </style>
   </head>
   <body>
+    <div id="main">
+      <form id="joinRoom">
+        <input id="roomName" /><button>Join</button>
+      </form>
+    </div>
     <div id="chat">
       <ul id="messages"></ul>
       <form id="form" action="">
@@ -29,6 +34,7 @@
       var messages = document.getElementById('messages');
       var form = document.getElementById('form');
       var input = document.getElementById('input');
+      var main = document.getElementById('main');
 
       form.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -44,6 +50,21 @@
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
       });
+
+      joinRoom.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (roomName.value) {
+          socket.emit('join request', roomName.value);
+          roomName.value = '';
+        }
+      });
+
+      socket.on('join room', function(roomInfo) {
+        var room = document.createElement('h2');
+        room.textContent = roomInfo;
+        main.appendChild(room);
+      });
+
     </script>
   </body>
 </html>
