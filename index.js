@@ -11,12 +11,14 @@ app.get('/', (req, res) => {
 
 io.on('connection', (socket) => {
   var currentRoom = 'lobby';
+  socket.join('lobby');
 
   socket.on('chat message', msg => {
     io.to(currentRoom).emit('chat message', msg);
   });
 
   socket.on('join request', roomName => {
+    socket.leave(currentRoom);
     socket.join(roomName);
     currentRoom = roomName;
     socket.emit('join room', roomName);
