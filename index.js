@@ -1,4 +1,4 @@
-const { createGame, joinGame, startGame, nextRound, gameState, activeCheck, legalBet } = require("./games.js");
+const { createGame, joinGame, startGame, gameState, activeCheck, legalBet, placeBet, phaseCheck, legalCard, playCard, evaluateTrick } = require("./games.js");
 
 const app = require('express')();
 const http = require('http').createServer(app);
@@ -29,7 +29,18 @@ io.on('connection', (socket) => {
   socket.on('start game', currentRoom => {
     startGame(currentRoom);
 
-    socket.to(currentRoom).emit('game update', gameState(currentRoom));
+    var game = gameState(currentRoom);
+
+    socket.to(currentRoom).emit('in play', game.inPlay);
+    socket.to(currentRoom).emit('active position', game.table.activePosition);
+    socket.to(currentRoom).emit('dealer position', game.table.dealerPosition);
+    socket.to(currentRoom).emit('phase', game.phase);
+    socket.to(currentRoom).emit('round', game.rounds[game.currentRound]);
+    socket.to(currentRoom).emit('trick', game.tricks[game.currentTrick]);
+    socket.to(currentRoom).emit('discard', game.discard);
+    socket.to(currentRoom).emit('trump', game.trump);
+    socket.to(currentRoom).emit('update hand', 1);
+
   });
 
   socket.on('place bet', bet => {
@@ -38,7 +49,8 @@ io.on('connection', (socket) => {
       continue;
     } else {
       //not active player
-      //send error
+      socket.to(currentRoom).emit('error', {type: 'active', id: socket, value: bet, message: 'Player not active'});
+      return
     }
 
     if (legalBet(currentRoom, socket, bet)) {
@@ -46,36 +58,71 @@ io.on('connection', (socket) => {
       continue;
     } else {
       //not legal bet
-      //send error
+      socket.to(currentRoom).emit('error', {type: 'bet', id: socket, value: bet, message: 'Illegal bet'});
+      return
     }
 
-    //update player info with bet
+    if (phaseCheck(currentRoom) == 0) {
+      continue;
+    } else {
+      socket.to(currentRoom).emit('error', {type: 'phase', id: socket, value: bet, message: 'Not betting phase'});
+    }
 
-    //check if betting phase is over
-      //update phase
-      //or
-      //next player bets
+    betResult = placeBet(currentRoom, socket, bet);
+    
+    if (betResult) {
+      socket.to(currentRoom).emit('bet placed', {id: socket, bet: bet});
+      socket.to(currentRoom).emit('phase', betResult.phase);
+      socket.to(currentRoom).emit('active position', betResult.activePosition);
+    } else {
+      socket.to(currentRoom).emit('error', {type: 'bet', id: socket, bet: bet});
+    }
+
   });
 
   socket.on('play card', card => {
-    //check if player is active
-    //check if card is in hand
-    //add card to play area
+    if (activeCheck(currentRoom, socket)) {
+      //active
+      continue;
+    } else {
+      //not active player
+      socket.to(currentRoom).emit('error', {type: 'active', id: socket, value: card, message: 'Player not active'});
+      return
+    }
 
-    //check if trick is over
-      //assign trick win
-        //check if hand is over
-          //assign points
-          //or
-          //continue
-      //or
-      //increment active player
-  });
-    //get cards played
+    if (legalCard(currentRoom, socket, card)) {
+      //legal card
+      continue;
+    } else {
+      //not legal card
+      socket.to(currentRoom).emit('error', {type: 'card', id: socket, value: card, message: 'Illegal card'});
+      return
+    }
 
-    //score round
+    if (phaseCheck(currentRoom) == 1) {
+      continue;
+    } else {
+      socket.to(currentRoom).emit('error', {type: 'phase', id: socket, value: card, message: 'Not playing phase'});
+    }
 
-    //end of game
+    var cardsInPlay = playCard(currentRoom, socket, card);
+    socket.to(currentRoom).emit('in play', cardsInPlay);
+
+    var game = evaluateTrick(currentRoom);
+
+    if (game.phase == 2) {
+      socket.to(currentRoom).emit('game over', game.table.players);
+    } else {
+      socket.to(currentRoom).emit('in play', game.inPlay);
+      socket.to(currentRoom).emit('active position', game.table.activePosition);
+      socket.to(currentRoom).emit('dealer position', game.table.dealerPosition);
+      socket.to(currentRoom).emit('phase', game.phase);
+      socket.to(currentRoom).emit('round', game.rounds[game.currentRound]);
+      socket.to(currentRoom).emit('trick', game.tricks[game.currentTrick]);
+      socket.to(currentRoom).emit('discard', game.discard);
+      socket.to(currentRoom).emit('trump', game.trump);
+      socket.to(currentRoom).emit('update hand', 1);
+    }
 });
 
 io.of('/').adapter.on('create-room', (room) => {

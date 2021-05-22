@@ -46,6 +46,8 @@ function createGame(room) {
         phase: 0,
         rounds: new Array(),
         currentRound: 0,
+        tricks: new Array(),
+        currentTrick: 0,
         chat: new Array(),
         inPlay: new Array(),
         discard: new Array(),
@@ -91,11 +93,14 @@ function startGame(room) {
 
 function nextRound(game) {
     if (game.currentRound == (game.rounds * 2) - 1) {
-        //game over
+        game.phase = 2;
     } else {
         game.currentRound += 1;
     }
 
+    game.table.players.forEach(function(player) {
+        player.betTricks = 0;
+    });
     resetCards(game);
     shuffle(game.deck);
 
@@ -122,6 +127,12 @@ function activeCheck(room, id) {
     return check;
 }
 
+function phaseCheck(room) {
+    var game = games.get(room);
+
+    return game.phase;
+}
+
 function legalBet(room, id, bet) {
     var game = games.get(room);
     var dealerPosition = game.table.dealerPosition;
@@ -138,4 +149,104 @@ function legalBet(room, id, bet) {
 
     return check;
 }
-module.exports = { createGame, joinGame, startGame, nextRound, gameState, activeCheck, legalBet };
+
+function placeBet(room, id, bet) {
+    var game = games.get(room);
+    var player = game.table.players.filter(player => player.id == id)[0]
+    var dealerPosition = game.table.dealerPosition;
+
+    player.betTricks = bet;
+
+    if (id == game.table.players[dealerPosition].id) {
+        game.phase = 1;
+    }
+
+    game.table.activePosition = (game.table.activePosition + 1) % game.table.players.length;
+
+    return {phase: game.phase, activePosition: game.table.activePosition};
+}
+
+function legalCard(room, id, card) {
+    var game = games.get(room);
+    var inPlay = game.inPlay;
+    var check = new Boolean(false);
+    var player = game.table.players.filter(player => player.id == id)[0]
+
+    var followSuit = player.hand.every(cardInHand => cardInHand.suit != inPlay[0].suit);
+
+    if (player.hand.includes(card)) {
+        if (inPlay.length == 0 || inPlay[0].suit == card.suit || followSuit == false) {
+            check = true;
+        }
+    }
+
+    return check;
+}
+
+function playCard(room, id, card) {
+    var game = games.get(room);
+    var inPlay = game.inPlay;
+    var player = game.table.players.filter(player => player.id == id)[0]
+
+    player.hand.splice(player.hand.indexOf(card), 1);
+    inPlay.push({card: card, player: player});
+
+    return inPlay;    
+}
+
+function nextTrick(game, winner) {
+    if (game.currentTrick == game.tricks) {
+        //assign points
+        game.table.players.forEach(function(player) {
+            if (player.betTricks == player.wonTricks) {
+                player.score += 10 + player.wonTricks;
+            }
+        });
+        nextRound(game);
+    } else {
+        game.currentTrick += 1;
+    }
+
+    game.inPlay = new Array();
+    game.table.dealerPosition = game.table.players.findOf(winner);
+    game.table.activePosition = game.table.dealerPosition + 1;
+    game.phase = 0;
+
+    return {dealerPosition: dealerPosition, activePosition: activePosition};
+}
+
+function evaluateTrick(game) {
+    //check if trick is over
+    if (game.table.activePosition == game.table.dealerPosition) {
+        //reduce inplay cards to active cards (either trump or lead suit)
+        if (inPlay.some(card => card.card.suit == game.trump[0].suit)) {
+            for (var i = inPlay.length - 1; i >= 1; i--) {
+                if (inPlay[i].suit != game.trump[0].suit) {
+                    inPlay.splice(i, 1);
+                }
+            }
+        } else {
+            for (var i = inPlay.length - 1; i >= 1; i--) {
+                if (inPlay[i].suit != inPlay[0].suit) {
+                    inPlay.splice(i, 1);
+                }
+            }
+        }
+
+        //who wins
+        var winningCard = Math.max.apply(Math, inPlay.map(function(card){return card.card.value;}))
+
+        var winningPlayer = inPlay.find(function(card) {return card.card.value == winningCard;}).player;
+
+        game.table.players.forEach(function(player) {if (player == winningPlayer) {player.wonTricks += 1;}});
+
+        nextTrick(game, winner);
+
+    } else {
+        game.table.activePosition = (game.table.activePosition + 1) % game.table.players.length;
+    }
+
+    return game;
+}
+
+module.exports = { createGame, joinGame, startGame, gameState, activeCheck, legalBet, placeBet, phaseCheck, legalCard, playCard, evaluateTrick };
