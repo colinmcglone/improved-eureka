@@ -46,26 +46,25 @@ io.on('connection', (socket) => {
   socket.on('place bet', bet => {
     if (activeCheck(currentRoom, socket)) {
       //active
-      continue;
     } else {
       //not active player
       socket.to(currentRoom).emit('error', {type: 'active', id: socket, value: bet, message: 'Player not active'});
-      return
+      return;
     }
 
     if (legalBet(currentRoom, socket, bet)) {
       //legal bet
-      continue;
     } else {
       //not legal bet
       socket.to(currentRoom).emit('error', {type: 'bet', id: socket, value: bet, message: 'Illegal bet'});
-      return
+      return;
     }
 
     if (phaseCheck(currentRoom) == 0) {
-      continue;
+      //correct phase
     } else {
       socket.to(currentRoom).emit('error', {type: 'phase', id: socket, value: bet, message: 'Not betting phase'});
+      return;
     }
 
     betResult = placeBet(currentRoom, socket, bet);
@@ -83,26 +82,25 @@ io.on('connection', (socket) => {
   socket.on('play card', card => {
     if (activeCheck(currentRoom, socket)) {
       //active
-      continue;
     } else {
       //not active player
       socket.to(currentRoom).emit('error', {type: 'active', id: socket, value: card, message: 'Player not active'});
-      return
+      return;
     }
 
     if (legalCard(currentRoom, socket, card)) {
       //legal card
-      continue;
     } else {
       //not legal card
       socket.to(currentRoom).emit('error', {type: 'card', id: socket, value: card, message: 'Illegal card'});
-      return
+      return;
     }
 
     if (phaseCheck(currentRoom) == 1) {
-      continue;
+      //correct phase
     } else {
       socket.to(currentRoom).emit('error', {type: 'phase', id: socket, value: card, message: 'Not playing phase'});
+      return;
     }
 
     var cardsInPlay = playCard(currentRoom, socket, card);
