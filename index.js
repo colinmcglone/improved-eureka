@@ -121,6 +121,7 @@ io.on('connection', (socket) => {
       socket.to(currentRoom).emit('trump', game.trump);
       socket.to(currentRoom).emit('update hand', 1);
     }
+  });
 });
 
 io.of('/').adapter.on('create-room', (room) => {
@@ -129,7 +130,7 @@ io.of('/').adapter.on('create-room', (room) => {
 
 io.of('/').adapter.on('join-room', (room, id) => {
   joinGame(room, id);
-})
+});
 
 http.listen(port, () => {
   console.log(`Socket.IO server running at http://localhost:${port}/`);
