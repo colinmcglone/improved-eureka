@@ -31,6 +31,7 @@ io.on('connection', (socket) => {
 
     var game = gameState(currentRoom);
 
+    socket.to(currentRoom).emit('start game', 1);
     socket.to(currentRoom).emit('in play', game.inPlay);
     socket.to(currentRoom).emit('active position', game.table.activePosition);
     socket.to(currentRoom).emit('dealer position', game.table.dealerPosition);
