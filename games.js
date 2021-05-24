@@ -85,7 +85,7 @@ function startGame(room) {
     }
     game.currentRound = 0;
 
-    game.table.players.forEach(element, index => element.tablePosition = index);
+    game.table.players.forEach((element, index) => element.tablePosition = index);
     game.table.activePosition = 1;
     
     nextRound(game);
