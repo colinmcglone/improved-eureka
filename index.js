@@ -36,18 +36,16 @@ io.on('connection', (socket) => {
     var game = gameState(currentRoom);
 
     io.in(currentRoom).emit('start game', 1);
-    
-    setTimeout(function() {
-      io.in(currentRoom).emit('in play', game.inPlay);
-      io.in(currentRoom).emit('active position', game.table.activePosition);
-      io.in(currentRoom).emit('dealer position', game.table.dealerPosition);
-      io.in(currentRoom).emit('phase', game.phase);
-      io.in(currentRoom).emit('round', game.rounds[game.currentRound]);
-      io.in(currentRoom).emit('trick', game.tricks[game.currentTrick]);
-      io.in(currentRoom).emit('discard', game.discard);
-      io.in(currentRoom).emit('trump', game.trump);
-      io.in(currentRoom).emit('update hand', 1);
-    }, 1000);
+    io.in(currentRoom).emit('in play', game.inPlay);
+    io.in(currentRoom).emit('active position', game.table.activePosition);
+    io.in(currentRoom).emit('dealer position', game.table.dealerPosition);
+    io.in(currentRoom).emit('phase', game.phase);
+    io.in(currentRoom).emit('round', game.rounds[game.currentRound]);
+    io.in(currentRoom).emit('trick', game.tricks[game.currentTrick]);
+    io.in(currentRoom).emit('discard', game.discard);
+    io.in(currentRoom).emit('trump', game.trump);
+    io.in(currentRoom).emit('update hand', 1);
+
   });
 
   socket.on('place bet', bet => {
