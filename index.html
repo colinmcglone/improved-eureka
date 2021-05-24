@@ -70,8 +70,8 @@
         start.type = 'button';
         start.value = roomInfo;
         start.addEventListener('click', function(roomInfo) {
-          socket.emit('start game', roomInfo);
-          console.log('start game sent ' + roomInfo);
+          socket.emit('start game', roomInfo.target.value);
+          console.log('start game sent ' + roomInfo.target.value);
         });
         main.appendChild(start);
       });
