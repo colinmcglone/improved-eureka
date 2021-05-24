@@ -59,10 +59,6 @@
         }
       });
 
-      function startGame(room) {
-        socket.emit('start game', room);
-      }
-
       socket.on('join room', function(roomInfo) {
         var room = document.createElement('h2');
         room.textContent = roomInfo;
@@ -73,7 +69,9 @@
         var start = document.createElement('input');
         start.type = 'button';
         start.value = 'Start Game';
-        start.addEventListener('click', startGame(roomInfo));
+        start.addEventListener('click', function(roomInfo) {
+          socket.emit('start game', roomInfo);
+        });
         main.appendChild(start);
       });
 
