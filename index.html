@@ -73,7 +73,7 @@
         var start = document.createElement('input');
         start.type = 'button';
         start.value = 'Start Game';
-        start.onclick = startGame(roomInfo);
+        start.addEventListener('click', startGame(roomInfo));
         main.appendChild(start);
       });
 
