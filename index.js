@@ -37,6 +37,7 @@ io.on('connection', (socket) => {
 
     var game = gameState(currentRoom);
 
+    console.log(currentRoom + ' send game data');
     socket.to(currentRoom).emit('start game', 1);
     socket.to(currentRoom).emit('in play', game.inPlay);
     socket.to(currentRoom).emit('active position', game.table.activePosition);
@@ -47,6 +48,8 @@ io.on('connection', (socket) => {
     socket.to(currentRoom).emit('discard', game.discard);
     socket.to(currentRoom).emit('trump', game.trump);
     socket.to(currentRoom).emit('update hand', 1);
+    console.log(currentRoom + ' end game data');
+
 
   });
 
