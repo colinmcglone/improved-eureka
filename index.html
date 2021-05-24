@@ -78,6 +78,7 @@
       });
 
       socket.on('start game', function() {
+        console.log('start game');
         var button = document.getElementById('startButton');
         button.remove();
 
@@ -99,6 +100,7 @@
       });
 
       socket.on('in play', function(inPlay) {
+        console.log('in play ' + inPlay);
         var inPlayDiv = document.getElementById('inPlay');
         var cardList = document.createElement('ul');
         inPlay.forEach((card) => {
