@@ -27,6 +27,8 @@ io.on('connection', (socket) => {
   });
 
   socket.on('start game', currentRoom => {
+    console.log(currentRoom + ' starts game');
+    
     startGame(currentRoom);
 
     var game = gameState(currentRoom);
