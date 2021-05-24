@@ -59,11 +59,22 @@
         }
       });
 
+      function startGame(room) {
+        socket.emit('start game', room);
+      }
+
       socket.on('join room', function(roomInfo) {
         var room = document.createElement('h2');
         room.textContent = roomInfo;
         main.appendChild(room);
         messages.innerHTML = '';
+        var join = document.getElementById('joinRoom');
+        join.remove();
+        var start = document.createElement('input');
+        start.type = 'button';
+        start.value = 'Start Game';
+        start.onclick = startGame(roomInfo);
+        main.appendChild(start);
       });
 
       socket.on('start game', function() {
