@@ -68,7 +68,7 @@
         join.remove();
         var start = document.createElement('input');
         start.type = 'button';
-        start.value = 'Start Game';
+        start.value = roomInfo;
         start.addEventListener('click', function(roomInfo) {
           socket.emit('start game', roomInfo);
           console.log('start game sent ' + roomInfo);
