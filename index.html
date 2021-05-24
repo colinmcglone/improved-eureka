@@ -71,11 +71,13 @@
         start.value = 'Start Game';
         start.addEventListener('click', function(roomInfo) {
           socket.emit('start game', roomInfo);
+          console.log('start game sent');
         });
         main.appendChild(start);
       });
 
       socket.on('start game', function() {
+        console.log('start game received');
         var gameDiv = document.createElement('div');
         gameDiv.innerHTML = `
         <div id="deck"><h2>Deck</h2></div>
