@@ -70,7 +70,7 @@
         start.type = 'button';
         start.value = 'Start Game';
         start.addEventListener('click', function(roomInfo) {
-          io.in(roomInfo).emit('start game', roomInfo);
+          socket.emit('start game', roomInfo);
         });
         main.appendChild(start);
       });
