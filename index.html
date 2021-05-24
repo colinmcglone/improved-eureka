@@ -71,7 +71,7 @@
         start.value = 'Start Game';
         start.addEventListener('click', function(roomInfo) {
           socket.emit('start game', roomInfo);
-          console.log('start game sent');
+          console.log('start game sent ' + roomInfo);
         });
         main.appendChild(start);
       });
