@@ -76,7 +76,7 @@ function joinGame(room, id) {
 
 function startGame(room) {
     var game = games.get(room);
-    var maxHandSize = Math.floor(52/game.players.length);
+    var maxHandSize = Math.floor(52/game.table.players.length);
     for (i = 1; i < maxHandSize; i++) {
         game.rounds.push(i);
     }
