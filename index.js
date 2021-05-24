@@ -24,11 +24,15 @@ io.on('connection', (socket) => {
     socket.join(roomName);
     currentRoom = roomName;
     socket.emit('join room', roomName);
+    if (io.sockets.adapter.rooms.get(roomName).size == 1) {
+      createGame(roomName);
+    }
+    joinGame(roomName, socket);
   });
 
   socket.on('start game', currentRoom => {
     console.log(currentRoom + ' starts game');
-    
+
     startGame(currentRoom);
 
     var game = gameState(currentRoom);
