@@ -103,7 +103,6 @@
       });
 
       socket.on('in play', function(inPlay) {
-        console.log('in play ' + inPlay);
         var inPlayDiv = document.getElementById('inPlay');
         var cardList = document.createElement('ul');
         inPlay.forEach((card) => {
@@ -112,6 +111,7 @@
           cardList.appendChild(li);
         });
         inPlayDiv.appendChild(cardList);
+        console.log('in play ' + inPlay);
       });
 
       socket.on('players', function(players) {
@@ -120,7 +120,7 @@
         var playerList = document.createElement('ul');
         players.forEach((card) => {
           let li = document.createElement('ul');
-          li.innerText = players.id;
+          li.innerText = players.name;
           playerList.appendChild(li);
         });
         playersDiv.appendChild(playerList);
