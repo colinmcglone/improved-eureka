@@ -35,7 +35,7 @@ io.on('connection', (socket) => {
 
     var game = gameState(currentRoom);
 
-    io.in(currentRoom).emit('start game', 1);
+    socket.to(currentRoom).emit('start game', 1);
     
     socket.to(currentRoom).emit('in play', game.inPlay);
     socket.to(currentRoom).emit('players', game.table.players);
