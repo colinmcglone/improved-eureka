@@ -18,7 +18,10 @@
   <body>
     <div id="main">
       <form id="joinRoom">
-        <input id="roomName" /><button>Join</button>
+        <label for="name">Player Name:</label>
+        <input name="name" id="playerName" />
+        <label for="room">Room:</label>
+        <input name="room" id="roomName" /><button>Join</button>
       </form>
     </div>
     <div id="chat">
@@ -54,7 +57,7 @@
       joinRoom.addEventListener('submit', function(e) {
         e.preventDefault();
         if (roomName.value) {
-          socket.emit('join request', roomName.value);
+          socket.emit('join request', roomName.value, playerName.value);
           roomName.value = '';
         }
       });
@@ -107,10 +110,24 @@
           let li = document.createElement('li');
           li.innerText = card.Value + ' ' + card.Suit;
           cardList.appendChild(li);
-        })
+        });
         inPlayDiv.appendChild(cardList);
       });
 
+      socket.on('players', function(players) {
+        console.log('players: ' + players);
+        var playersDiv = document.getElementById('players');
+        var playerList = document.createElement('ul');
+        players.forEach((card) => {
+          let li = document.createElement('ul');
+          li.innerText = players.id;
+          playerList.appendChild(li);
+        });
+        playersDiv.appendChild(playerList);
+      });
+
+
+      //functions to receive events
     </script>
   </body>
 </html>

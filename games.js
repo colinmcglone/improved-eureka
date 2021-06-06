@@ -61,10 +61,11 @@ function createGame(room) {
     games.set(room, game);
 }
 
-function joinGame(room, id) {
+function joinGame(room, id, name) {
     var game = games.get(room);
     var player = {
         id: id,
+        name: name,
         score: 0,
         hand: new Array(),
         betTricks: 0,

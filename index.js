@@ -19,7 +19,7 @@ io.on('connection', (socket) => {
     io.to(currentRoom).emit('chat message', msg);
   });
 
-  socket.on('join request', roomName => {
+  socket.on('join request', (roomName, playerName) => {
     socket.leave(currentRoom);
     socket.join(roomName);
     currentRoom = roomName;
@@ -27,7 +27,7 @@ io.on('connection', (socket) => {
     if (io.sockets.adapter.rooms.get(roomName).size == 1) {
       createGame(roomName);
     }
-    joinGame(roomName, socket);
+    joinGame(roomName, socket, playerName);
   });
 
   socket.on('start game', currentRoom => {
@@ -39,6 +39,7 @@ io.on('connection', (socket) => {
     
     setTimeout(function() {
       io.in(currentRoom).emit('in play', game.inPlay);
+      io.in(currentRoom).emit('players', game.table.players);
       io.in(currentRoom).emit('active position', game.table.activePosition);
       io.in(currentRoom).emit('dealer position', game.table.dealerPosition);
       io.in(currentRoom).emit('phase', game.phase);
