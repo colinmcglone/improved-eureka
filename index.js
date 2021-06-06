@@ -37,16 +37,16 @@ io.on('connection', (socket) => {
 
     socket.to(currentRoom).emit('start game', 1);
     
-    socket.to(currentRoom).emit('in play', game.inPlay);
-    socket.to(currentRoom).emit('players', game.table.players);
-    socket.to(currentRoom).emit('active position', game.table.activePosition);
-    socket.to(currentRoom).emit('dealer position', game.table.dealerPosition);
-    socket.to(currentRoom).emit('phase', game.phase);
-    socket.to(currentRoom).emit('round', game.rounds[game.currentRound]);
-    socket.to(currentRoom).emit('trick', game.tricks[game.currentTrick]);
-    socket.to(currentRoom).emit('discard', game.discard);
-    socket.to(currentRoom).emit('trump', game.trump);
-    socket.to(currentRoom).emit('update hand', 1);
+    setTimeout(socket.to(currentRoom).emit('in play', game.inPlay), 100);
+    setTimeout(socket.to(currentRoom).emit('players', game.table.players), 100);
+    setTimeout(socket.to(currentRoom).emit('active position', game.table.activePosition), 100);
+    setTimeout(socket.to(currentRoom).emit('dealer position', game.table.dealerPosition), 100);
+    setTimeout(socket.to(currentRoom).emit('phase', game.phase), 100);
+    setTimeout(socket.to(currentRoom).emit('round', game.rounds[game.currentRound]), 100);
+    setTimeout(socket.to(currentRoom).emit('trick', game.tricks[game.currentTrick]), 100);
+    setTimeout(socket.to(currentRoom).emit('discard', game.discard), 100);
+    setTimeout(socket.to(currentRoom).emit('trump', game.trump), 100);
+    setTimeout(socket.to(currentRoom).emit('update hand', 1), 100);
   });
 
   socket.on('place bet', bet => {
