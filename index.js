@@ -19,15 +19,15 @@ io.on('connection', (socket) => {
     io.to(currentRoom).emit('chat message', msg);
   });
 
-  socket.on('join request', (roomName, playerName) => {
+  socket.on('join request', data => {
     socket.leave(currentRoom);
-    socket.join(roomName);
-    currentRoom = roomName;
-    socket.emit('join room', roomName);
-    if (io.sockets.adapter.rooms.get(roomName).size == 1) {
-      createGame(roomName);
+    socket.join(data.room);
+    currentRoom = data.room;
+    socket.emit('join room', data.room);
+    if (io.sockets.adapter.rooms.get(data.room).size == 1) {
+      createGame(data.room);
     }
-    joinGame(roomName, socket, playerName);
+    joinGame(data.room, socket, data.player);
   });
 
   socket.on('start game', currentRoom => {
