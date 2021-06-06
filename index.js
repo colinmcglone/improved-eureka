@@ -37,16 +37,16 @@ io.on('connection', (socket) => {
 
     io.in(currentRoom).emit('start game', 1);
     
-    io.in(currentRoom).emit('in play', game.inPlay);
-    io.in(currentRoom).emit('players', game.table.players);
-    io.in(currentRoom).emit('active position', game.table.activePosition);
-    io.in(currentRoom).emit('dealer position', game.table.dealerPosition);
-    io.in(currentRoom).emit('phase', game.phase);
-    io.in(currentRoom).emit('round', game.rounds[game.currentRound]);
-    io.in(currentRoom).emit('trick', game.tricks[game.currentTrick]);
-    io.in(currentRoom).emit('discard', game.discard);
-    io.in(currentRoom).emit('trump', game.trump);
-    io.in(currentRoom).emit('update hand', 1);
+    socket.to(currentRoom).emit('in play', game.inPlay);
+    socket.to(currentRoom).emit('players', game.table.players);
+    socket.to(currentRoom).emit('active position', game.table.activePosition);
+    socket.to(currentRoom).emit('dealer position', game.table.dealerPosition);
+    socket.to(currentRoom).emit('phase', game.phase);
+    socket.to(currentRoom).emit('round', game.rounds[game.currentRound]);
+    socket.to(currentRoom).emit('trick', game.tricks[game.currentTrick]);
+    socket.to(currentRoom).emit('discard', game.discard);
+    socket.to(currentRoom).emit('trump', game.trump);
+    socket.to(currentRoom).emit('update hand', 1);
   });
 
   socket.on('place bet', bet => {
