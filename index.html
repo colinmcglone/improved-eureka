@@ -57,7 +57,7 @@
       joinRoom.addEventListener('submit', function(e) {
         e.preventDefault();
         if (roomName.value) {
-          socket.emit('join request', roomName.value, playerName.value);
+          socket.emit('join request', {room: roomName.value, player: playerName.value});
           roomName.value = '';
         }
       });
