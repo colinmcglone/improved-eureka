@@ -13,7 +13,7 @@ MongoClient.connect(url, {
     }
 
     // Specify database you want to access
-    const db = client.db('test');
+    const db = client.db('expens');
 
     console.log(`MongoDB Connected: ${url}`);
 });
