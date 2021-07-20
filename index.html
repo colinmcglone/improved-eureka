@@ -4,8 +4,8 @@
     <title>Socket.IO Test</title>
     <style>
       body { margin: 0; padding-bottom: 3rem; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-
-      #form { background: rgba(0, 0, 0, 0.15); padding: 0.25rem; position: fixed; bottom: 0; left: 0; right: 0; display: flex; height: 3rem; box-sizing: border-box; backdrop-filter: blur(10px); }
+      #chat { width: 350px; float: right; height: 100%;}
+      #form { background: rgba(0, 0, 0, 0.15); padding: 0.25rem; display: flex; height: 3rem; box-sizing: border-box; backdrop-filter: blur(10px); }
       #input { border: none; padding: 0 1rem; flex-grow: 1; border-radius: 2rem; margin: 0.25rem; }
       #input:focus { outline: none; }
       #form > button { background: #333; border: none; padding: 0 1rem; margin: 0.25rem; border-radius: 3px; outline: none; color: #fff; }
@@ -16,10 +16,20 @@
     </style>
   </head>
   <body>
-    <ul id="messages"></ul>
-    <form id="form" action="">
-      <input id="input" autocomplete="off" /><button>Send</button>
-    </form>
+    <div id="main">
+      <form id="joinRoom">
+        <label for="name">Player Name:</label>
+        <input name="name" id="playerName" />
+        <label for="room">Room:</label>
+        <input name="room" id="roomName" /><button>Join</button>
+      </form>
+    </div>
+    <div id="chat">
+      <ul id="messages"></ul>
+      <form id="form" action="">
+        <input id="input" autocomplete="off" /><button>Send</button>
+      </form>
+    </div>
     <script src="/socket.io/socket.io.js"></script>
     <script>
       var socket = io();
@@ -27,6 +37,7 @@
       var messages = document.getElementById('messages');
       var form = document.getElementById('form');
       var input = document.getElementById('input');
+      var main = document.getElementById('main');
 
       form.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -42,6 +53,81 @@
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
       });
+
+      joinRoom.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (roomName.value) {
+          socket.emit('join request', {room: roomName.value, player: playerName.value});
+          roomName.value = '';
+        }
+      });
+
+      socket.on('join room', function(roomInfo) {
+        var room = document.createElement('h2');
+        room.textContent = roomInfo;
+        main.appendChild(room);
+        messages.innerHTML = '';
+        var join = document.getElementById('joinRoom');
+        join.remove();
+        var start = document.createElement('input');
+        start.id = 'startButton';
+        start.type = 'button';
+        start.value = roomInfo;
+        start.addEventListener('click', function(roomInfo) {
+          socket.emit('start game', roomInfo.target.value);
+          console.log('start game sent ' + roomInfo.target.value);
+        });
+        main.appendChild(start);
+      });
+
+      socket.on('start game', function() {
+        console.log('start game');
+        var button = document.getElementById('startButton');
+        button.remove();
+
+        var gameDiv = document.createElement('div');
+        gameDiv.innerHTML = `
+        <div id="deck"><h2>Deck</h2></div>
+        <div id="discard"><h2>Discard</h2></div>
+        <div id="trump"><h2>Trump</h2></div>
+        <div id="inPlay"><h2>In Play</h2></div>
+        <div id="players"><h2>Players</h2></div>
+        <div id="myGame">
+          <div id="hand"></div>
+          <div id="score"></div>
+          <div id="wonTricks"></div>
+          <div id="betTricks"></div>
+        </div>`;
+        gameDiv.setAttribute('id', 'game');
+        main.appendChild(gameDiv);
+      });
+
+      socket.on('in play', function(inPlay) {
+        var inPlayDiv = document.getElementById('inPlay');
+        var cardList = document.createElement('ul');
+        inPlay.forEach((card) => {
+          let li = document.createElement('li');
+          li.innerText = card.Value + ' ' + card.Suit;
+          cardList.appendChild(li);
+        });
+        inPlayDiv.appendChild(cardList);
+        console.log('in play ' + inPlay);
+      });
+
+      socket.on('players', function(players) {
+        console.log('players: ' + players);
+        var playersDiv = document.getElementById('players');
+        var playerList = document.createElement('ul');
+        players.forEach((card) => {
+          let li = document.createElement('ul');
+          li.innerText = players.name;
+          playerList.appendChild(li);
+        });
+        playersDiv.appendChild(playerList);
+      });
+
+
+      //functions to receive events
     </script>
   </body>
 </html>
